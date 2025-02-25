@@ -1,0 +1,1 @@
+# ninzyyy.github.io
