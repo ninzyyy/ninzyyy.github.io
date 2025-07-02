@@ -156,9 +156,22 @@ async function animateSequence() {
   finalLine.style.fontFamily = "inherit";
   finalLine.style.marginTop = "1rem";
 
-  sequenceEl.textContent = "Ninaad Kalla";
-  sequenceEl.classList.remove("codon");
+  sequenceEl.parentElement.replaceWith(finalLine);
 }
 
 
 animateSequence();
+
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+
+  const icon = document.getElementById("dark-icon");
+  if (document.body.classList.contains("dark")) {
+    icon.classList.remove("fa-moon");
+    icon.classList.add("fa-sun");
+  } else {
+    icon.classList.remove("fa-sun");
+    icon.classList.add("fa-moon");
+  }
+}

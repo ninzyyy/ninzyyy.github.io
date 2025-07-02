@@ -22,6 +22,17 @@ body {
   text-align: center;
 }
 
+.dark-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  transition: color 0.3s;
+  z-index: 1000;
+}
+
 #sequence {
   display: inline-block;
   font-family: monospace;
