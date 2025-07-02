@@ -1,4 +1,6 @@
 const name = "NINAADKALLA";
+const sequenceEl = document.getElementById("sequence");
+
 
 // List of 1-letter amino acid name to codons
 const aminoCodons = {
@@ -52,8 +54,6 @@ function renderCodons(codons, highlightIndex = -1) {
 
 // Animation function
 async function animateSequence() {
-
-  const sequenceEl = document.getElementById("sequence");
 
   // Step 1: Show DNA
   let dna = name.split("").map(getRandomCodon);
