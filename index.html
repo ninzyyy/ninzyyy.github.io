@@ -1,30 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ninaad Kalla</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://kit.fontawesome.com/your_kit_id.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
 
 <body>
 
-  <div class="dark-toggle" onclick="toggleDarkMode()">
-    <i id="dark-icon" class="fas fa-moon"></i>
-  </div>
+  <button id="mode-toggle">
+    <i class="fas fa-moon"></i>
+  </button>
 
-  <div class="introduction">
-    <p>Hi, my name is <span id="sequence"></span></p>
-  </div>
+  <div id ="content">
+    <main>
 
-  <div class="links">
-    <a href="https://github.com/ninzyyy" target="_blank">GitHub</a>
+      <pre><span id="introduction">Hey, my name is </span><span id="animation"></span></pre>
+
+      <div id="desc">
+        I'm currently a Master's student studying Bioinformatics at l'Université de Montréal.
+      </div>
+
+      <div id="desc">
+        I am interested in interpretable machine learning and analytical methods to digest complex biological data.
+      </div>
+
+      <div id="contact">
+        <p>Email: <a href="mailto:ninaadkalla@gmail.com">ninaadkalla@gmail.com</a></p>
+        <p>GitHub: <a href="https://github.com/ninzyyy" target="_blank">github.com/ninzyyy</a></p>
+      </div>
+
+
+    </main>
   </div>
 
   <script src="script.js"></script>
-
 </body>
-
 </html>

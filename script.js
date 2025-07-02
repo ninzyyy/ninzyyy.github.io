@@ -1,18 +1,45 @@
-const name = "NINAADKALLA";
-const sequenceEl = document.getElementById("sequence");
+// Light/Dark Mode
+const toggleButton = document.getElementById("mode-toggle");
+const html = document.documentElement;
 
-
-// List of 1-letter amino acid name to codons
-const aminoCodons = {
-  N:["AAT", "AAC"],
-  I:["ATT", "ATC", "ATA"],
-  A:["GCT", "GCC", "GCA", "GCG"],
-  D:["GAT", "GAC"],
-  K:["AAA", "AAG"],
-  L:["TTA", "TTG", "CTT", "CTC", "CTA", "CTG"]
+function setTheme(theme) {
+  html.dataset.theme = theme;
+  toggleButton.innerHTML = theme === "dark"
+  ? '<i class="fas fa-sun" id="theme-icon"></i>'
+  : '<i class="fas fa-moon" id="theme-icon"></i>';
+  localStorage.setItem("theme", theme);
 }
 
-// List of codons to 3-letter amino acid name
+// Set light/dark theme on load
+(function initializeTheme() {
+  const saved = localStorage.getItem("theme");
+  if (saved) {
+    setTheme(saved);
+  } else {
+    const hour = new Date().getHours();
+    const theme = hour >= 19 || hour < 7 ? "dark" : "light"; // Night = dark
+    setTheme(theme);
+  }
+})();
+
+// Toggle light/dark mode on click
+toggleButton.onclick = () => {
+  const current = html.dataset.theme;
+  const next = current === "dark" ? "light" : "dark";
+  setTheme(next);
+};
+
+
+// Animation
+const aminoCodons = {
+  N: ["AAT", "AAC"],
+  I: ["ATT", "ATC", "ATA"],
+  A: ["GCT", "GCC", "GCA", "GCG"],
+  D: ["GAT", "GAC"],
+  K: ["AAA", "AAG"],
+  L: ["TTA", "TTG", "CTT", "CTC", "CTA", "CTG"]
+};
+
 const codonToAA3 = {
   AAT: "Asn", AAC: "Asn",
   ATT: "Ile", ATC: "Ile", ATA: "Ile",
@@ -22,156 +49,101 @@ const codonToAA3 = {
   TTA: "Leu", TTG: "Leu", CTT: "Leu", CTC: "Leu", CTA: "Leu", CTG: "Leu"
 };
 
+const name = "Ninaad";
 
-// Function to randomly pick a codon for a given letter
-function getRandomCodon(aminoLetter) {
-  const options = aminoCodons[aminoLetter];
-  return options[Math.floor(Math.random() * options.length)];
+
+// Format string into triplets with padding or spacing
+function formatTripletStep(chars, pad = ' ') {
+  return chars.map(ch => ch + pad + pad).join('');
 }
 
-// Function to convert DNA to RNA (T -> U)
-function dnaToRna(codon) {
-  return codon.replace(/T/g, "U");
+const dnaCodons = name.toUpperCase().split('').map(letter => {
+  const codons = aminoCodons[letter];
+  return codons[Math.floor(Math.random() * codons.length)];
+});
+
+const rnaCodons = dnaCodons.map(codon => codon.replace(/T/g, "U"));
+const aa3Letters = dnaCodons.map(codon => codonToAA3[codon]);
+const aa1Letters = name.toUpperCase().split('');
+const nameFormatted = name.split('');
+
+// Build steps with visual alignment
+const steps = [
+  dnaCodons.join(""),
+  rnaCodons.join(""),
+  aa3Letters.join(""),
+  formatTripletStep(aa1Letters, ' '),
+  formatTripletStep(nameFormatted, ' '),
+];
+
+const anim = document.getElementById("animation");
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
+
+async function collapseSpacedName(spaced) {
+  const letters = spaced.split('').filter(c => c !== ' '); // remove spaces
+  let display = spaced;
+
+  for (let i = 0; i < letters.length - 1; i++) {
+    // Merge letters up to index i
+    const merged = letters.slice(0, i + 1).join('');
+    const rest = letters.slice(i + 1).map(ch => ch + '  ').join('');
+    display = merged + '   ' + rest;
+
+    anim.textContent = display.trimEnd();
+    await delay(100);
+  }
+
+  // Capitalize first letter
+  const finalName = letters.join('');
+  anim.textContent = finalName.charAt(0).toUpperCase() + finalName.slice(1).toLowerCase() + ".";
 }
 
-function sleep(ms) {
-  return new Promise(res => setTimeout(res, ms));
-}
 
-function renderCodons(tokens, highlightIndex = -1, highlightCharIndex = -1) {
-  sequenceEl.innerHTML = "";
+async function animateText() {
+  anim.classList.add("animating");
+  let current = steps[0].split('');
+  anim.textContent = current.join('');
 
-  tokens.forEach((token, i) => {
-    // If it's a 3-letter codon (e.g., "AAT") or RNA (e.g., "AAU"), split into nucleotides
-    const isCodon = /^[AUGCT]{3}$/.test(token);
+  for (let stepIndex = 1; stepIndex < steps.length; stepIndex++) {
+  const next = steps[stepIndex];
+  const maxLength = Math.max(current.length, next.length);
 
-    if (isCodon) {
-      const codonSpan = document.createElement("span");
-      codonSpan.classList.add("codon");
+  // 👇 Add this line here
+  const lastCharIndex = next
+    .split('')
+    .reduce((last, ch, idx) => (ch !== ' ' ? idx : last), 0);
 
-      token.split("").forEach((char, j) => {
-        const charSpan = document.createElement("span");
-        charSpan.textContent = char;
-        if (i === highlightIndex && j === highlightCharIndex) {
-          charSpan.classList.add("active");
-        }
-        codonSpan.appendChild(charSpan);
-      });
-
-      sequenceEl.appendChild(codonSpan);
-    } else {
-      // Fallback for things like "Asn", "K", "Ninaad"
-      const span = document.createElement("span");
-      span.textContent = token;
-      span.classList.add("codon");
-      if (i === highlightIndex) {
-        span.classList.add("active");
-      }
-      sequenceEl.appendChild(span);
+  for (let i = 0; i < maxLength; i++) {
+    if (current[i] !== next[i]) {
+      current[i] = next[i] || '';
     }
 
-    if (i < tokens.length - 1) {
-      sequenceEl.append(" ");
+    const isUnderlined = stepIndex < steps.length;
+
+    anim.innerHTML = current
+      .map((ch, j) => {
+        const charDisplay =
+          isUnderlined && j === i && i <= lastCharIndex
+            ? `<u>${ch}</u>` : ch;
+
+        const spacer = (isUnderlined && next.includes('   '))
+          ? ''
+          : ((j + 1) % 3 === 0 ? ' ' : '');
+
+        return charDisplay + spacer;
+      })
+      .join('');
+
+      await delay(100);
     }
-  });
+
+    await delay(500);
+  }
+
+
+  await collapseSpacedName(steps[steps.length - 1]);
+  anim.classList.remove("animating");
 }
 
-
-
-// Animation function
-async function animateSequence() {
-
-  // Step 1: DNA codons
-  const dna = name.split("").map(getRandomCodon);
-  renderCodons(dna);
-  await sleep(1000);
-
-  // Step 2: DNA → RNA (codon-level)
-  const rna = dna.map(dnaToRna);
-  let rnaDisplay = [...dna]; // clone for animating transition
-  for (let i = 0; i < rna.length; i++) {
-    const oldCodon = dna[i].split("");
-    const newCodon = rna[i].split("");
-
-    for (let j = 0; j < 3; j++) {
-      // Update only one nucleotide at a time
-      const updated = [...rnaDisplay];
-      updated[i] = oldCodon.map((c, idx) => (idx <= j ? newCodon[idx] : oldCodon[idx])).join("");
-      renderCodons(updated, i, j);
-      await sleep(150);
-  }
-
-  // Finalize replacement
-  rnaDisplay[i] = rna[i];
-}
-
-
-  await sleep(1000);
-
-  // Step 3: RNA → 3-letter amino acids
-  const aa3 = rna.map(c => codonToAA3[c.replace(/U/g, "T")]);
-  let aa3Display = [...rnaDisplay];
-  for (let i = 0; i < aa3.length; i++) {
-    aa3Display[i] = aa3[i];
-    renderCodons(aa3Display, i);
-    await sleep(200);
-  }
-
-  await sleep(1000);
-
-  // Step 4: 3-letter → 1-letter amino acid names
-  const aa1 = name.split(""); // e.g., ["N","I","N","A",...]
-  aa1.splice(6, 0, " "); // Insert space after "NINAAD"
-  let aa1Display = [...aa3Display];
-  for (let i = 0; i < aa1.length; i++) {
-    aa1Display[i] = aa1[i];
-    renderCodons(aa1Display, i);
-    await sleep(200);
-  }
-
-  await sleep(1000);
-
-  // Step 5: Capital → lowercase to form final name
-  const finalName = "Ninaad Kalla";
-  const finalLetters = finalName.replace(" ", "").split("");
-  let finalDisplay = name.split("");
-  finalDisplay.splice(6, 0, " "); // Maintain space
-
-  for (let i = 0; i < finalLetters.length; i++) {
-    finalDisplay[i] = finalLetters[i];
-    const spaced = [
-      ...finalDisplay.slice(0, 6),
-      " ",
-      ...finalDisplay.slice(6)
-    ];
-    renderCodons(spaced, i < 6 ? i : i + 1); // account for space in highlight
-    await sleep(200);
-  }
-
-  await sleep(1000);
-
-  // Final collapse to normal line
-  const finalLine = document.createElement("p");
-  finalLine.textContent = "Hi, my name is Ninaad Kalla";
-  finalLine.style.fontFamily = "inherit";
-  finalLine.style.marginTop = "1rem";
-
-  sequenceEl.parentElement.replaceWith(finalLine);
-}
-
-
-animateSequence();
-
-
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
-
-  const icon = document.getElementById("dark-icon");
-  if (document.body.classList.contains("dark")) {
-    icon.classList.remove("fa-moon");
-    icon.classList.add("fa-sun");
-  } else {
-    icon.classList.remove("fa-sun");
-    icon.classList.add("fa-moon");
-  }
-}
+animateText();
