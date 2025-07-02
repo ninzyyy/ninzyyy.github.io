@@ -87,6 +87,25 @@ async function animateSequence() {
     renderCodons(rna, i);
     await sleep(100);
   }
+
+  await sleep(500);
+
+  // Step 5: 1-letter name AA to lowercase
+  const finalName = "Ninaad Kalla";
+  const finalLetters = finalName.replace(" ", "").split("");
+  let currentLetters = name.split(""); // starts as ["N","I","N",...]
+  const spaceIndex = 6; // after 6 letters, add a space
+
+  for (let i = 0; i < finalLetters.length; i++) {
+    currentLetters[i] = finalLetters[i];
+    const display = [...currentLetters];
+    if (spaceIndex > 0) {
+      display.splice(spaceIndex, 0, " "); // insert space
+    }
+    sequenceEl.textContent = display.join(" ");
+    await sleep(100);
+
+  }
 }
 
 animateSequence();
