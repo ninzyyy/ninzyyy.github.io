@@ -39,17 +39,15 @@ function sleep(ms) {
 }
 
 function renderCodons(tokens, highlightIndex = -1) {
-  sequenceEl.innerHTML = ""; // Clear previous
-  tokens.forEach((text, i) => {
+  sequenceEl.innerHTML = "";
+  tokens.forEach((token, i) => {
     const span = document.createElement("span");
-    span.textContent = text;
+    span.textContent = token;
     span.classList.add("codon");
     if (i === highlightIndex) {
       span.classList.add("active");
     }
     sequenceEl.appendChild(span);
-
-    // Add a space after each token except the last
     if (i < tokens.length - 1) {
       sequenceEl.append(" ");
     }
@@ -57,67 +55,75 @@ function renderCodons(tokens, highlightIndex = -1) {
 }
 
 
-
 // Animation function
 async function animateSequence() {
 
-  // Step 1: Show DNA
-  let dna = name.split("").map(getRandomCodon);
+  // Step 1: DNA codons
+  const dna = name.split("").map(getRandomCodon);
   renderCodons(dna);
-  await sleep(500)
+  await sleep(1000);
 
-  // Step 2: DNA → RNA
-  let rna = dna.map(dnaToRna);
+  // Step 2: DNA → RNA (codon-level)
+  const rna = dna.map(dnaToRna);
+  let rnaDisplay = [...dna]; // clone for animating transition
   for (let i = 0; i < rna.length; i++) {
-    dna[i] = rna[i];
-    renderCodons(dna, i);
-    await sleep(100);
+    rnaDisplay[i] = rna[i];
+    renderCodons(rnaDisplay, i);
+    await sleep(200);
   }
 
-  await sleep(500);
+  await sleep(1000);
 
-  // Step 3: RNA → 3-letter AA
-  let aa3 = rna.map(c => codonToAA3[c.replace(/U/g, "T")]);
+  // Step 3: RNA → 3-letter amino acids
+  const aa3 = rna.map(c => codonToAA3[c.replace(/U/g, "T")]);
+  let aa3Display = [...rnaDisplay];
   for (let i = 0; i < aa3.length; i++) {
-    rna[i] = aa3[i];
-    renderCodons(rna, i);
-    await sleep(100);
+    aa3Display[i] = aa3[i];
+    renderCodons(aa3Display, i);
+    await sleep(200);
   }
 
-  await sleep(500);
+  await sleep(1000);
 
-  // Step 4: 3-letter AA → 1-letter name AA
-  let letters = name.split("");
-  letters.splice(6, 0, " ");
-  for (let i = 0; i < letters.length; i++) {
-    rna[i] = letters[i];
-    renderCodons(rna, i);
-    await sleep(100);
+  // Step 4: 3-letter → 1-letter amino acid names
+  const aa1 = name.split(""); // e.g., ["N","I","N","A",...]
+  aa1.splice(6, 0, " "); // Insert space after "NINAAD"
+  let aa1Display = [...aa3Display];
+  for (let i = 0; i < aa1.length; i++) {
+    aa1Display[i] = aa1[i];
+    renderCodons(aa1Display, i);
+    await sleep(200);
   }
 
-  await sleep(500);
+  await sleep(1000);
 
-  // Step 5: 1-letter name AA to lowercase
+  // Step 5: Capital → lowercase to form final name
   const finalName = "Ninaad Kalla";
   const finalLetters = finalName.replace(" ", "").split("");
-  let currentLetters = name.split(""); // starts as ["N","I","N",...]
-  const spaceIndex = 6; // after 6 letters, add a space
+  let finalDisplay = name.split("");
+  finalDisplay.splice(6, 0, " "); // Maintain space
 
   for (let i = 0; i < finalLetters.length; i++) {
-    currentLetters[i] = finalLetters[i];
-    const display = [...currentLetters];
-    if (spaceIndex > 0) {
-      display.splice(spaceIndex, 0, " "); // insert space
-    }
-    sequenceEl.textContent = display.join(" ");
-    await sleep(100);
+    finalDisplay[i] = finalLetters[i];
+    const spaced = [
+      ...finalDisplay.slice(0, 6),
+      " ",
+      ...finalDisplay.slice(6)
+    ];
+    renderCodons(spaced, i < 6 ? i : i + 1); // account for space in highlight
+    await sleep(200);
   }
 
-  await sleep(500);
+  await sleep(1000);
 
-  // Replace animated line with clean final line
-  sequenceEl.parentElement.innerHTML = `<p>Hi, my name is Ninaad Kalla</p>`;
+  // Final collapse to normal line
+  const finalLine = document.createElement("p");
+  finalLine.textContent = "Hi, my name is Ninaad Kalla";
+  finalLine.style.fontFamily = "inherit";
+  finalLine.style.marginTop = "1rem";
 
+  sequenceEl.parentElement.replaceWith(finalLine);
 }
+
 
 animateSequence();
