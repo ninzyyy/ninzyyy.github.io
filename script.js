@@ -27,16 +27,26 @@ function getRandomCodon(aminoLetter) {
   return options[Math.floor(Math.random() * options.length)];
 }
 
-
 // Function to convert DNA to RNA (T -> U)
 function dnaToRna(codon) {
   return codon.replace(/T/g, "U");
 }
 
-
-
 function sleep(ms) {
   return new Promise(res => setTimeout(res, ms));
+}
+
+function renderCodons(codons, highlightIndex = -1) {
+  sequenceEl.innerHTML = ""; // Clear existing
+  codons.forEach((codon, i) => {
+    const span = document.createElement("span");
+    span.textContent = codon;
+    span.classList.add("codon");
+    if (i === highlightIndex) {
+      span.classList.add("highlight");
+    }
+    sequenceEl.appendChild(span);
+  });
 }
 
 
@@ -45,17 +55,16 @@ async function animateSequence() {
 
   const sequenceEl = document.getElementById("sequence");
 
-
   // Step 1: Show DNA
   let dna = name.split("").map(getRandomCodon);
-  sequenceEl.textContent = dna.join(" ");
+  renderCodons(dna);
   await sleep(500)
 
   // Step 2: DNA → RNA
   let rna = dna.map(dnaToRna);
-  for (let i = 0; i < dna.length; i++) {
+  for (let i = 0; i < rna.length; i++) {
     dna[i] = rna[i];
-    sequenceEl.textContent = dna.join(" ");
+    renderCodons(dna, i);
     await sleep(100);
   }
 
@@ -63,9 +72,9 @@ async function animateSequence() {
 
   // Step 3: RNA → 3-letter AA
   const aa3 = rna.map(c => codonToAA3[c.replace(/U/g, "T")]);
-  for (let i = 0; i < rna.length; i++) {
+  for (let i = 0; i < aa3.length; i++) {
     rna[i] = aa3[i];
-    sequenceEl.textContent = dna.join(" ");
+    renderCodons(rna, i);
     await sleep(100);
   }
 
@@ -73,9 +82,9 @@ async function animateSequence() {
 
   // Step 4: 3-letter AA → 1-letter name AA
   const letters = name.split("");
-  for (let i = 0; i < dna.length; i++) {
-    dna[i] = letters[i];
-    sequenceEl.textContent = dna.join(" ");
+  for (let i = 0; i < letters.length; i++) {
+    rna[i] = letters[i];
+    renderCodons(rna, i);
     await sleep(100);
   }
 }
