@@ -38,18 +38,24 @@ function sleep(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
-function renderCodons(codons, highlightIndex = -1) {
-  sequenceEl.innerHTML = ""; // Clear existing
-  codons.forEach((codon, i) => {
+function renderCodons(tokens, highlightIndex = -1) {
+  sequenceEl.innerHTML = ""; // Clear previous
+  tokens.forEach((text, i) => {
     const span = document.createElement("span");
-    span.textContent = codon;
+    span.textContent = text;
     span.classList.add("codon");
     if (i === highlightIndex) {
       span.classList.add("highlight");
     }
     sequenceEl.appendChild(span);
+
+    // Add a space after each token except the last
+    if (i < tokens.length - 1) {
+      sequenceEl.append(" ");
+    }
   });
 }
+
 
 
 // Animation function
@@ -71,7 +77,7 @@ async function animateSequence() {
   await sleep(500);
 
   // Step 3: RNA → 3-letter AA
-  const aa3 = rna.map(c => codonToAA3[c.replace(/U/g, "T")]);
+  let aa3 = rna.map(c => codonToAA3[c.replace(/U/g, "T")]);
   for (let i = 0; i < aa3.length; i++) {
     rna[i] = aa3[i];
     renderCodons(rna, i);
@@ -81,7 +87,8 @@ async function animateSequence() {
   await sleep(500);
 
   // Step 4: 3-letter AA → 1-letter name AA
-  const letters = name.split("");
+  let letters = name.split("");
+  letters.splice(6, 0, " ");
   for (let i = 0; i < letters.length; i++) {
     rna[i] = letters[i];
     renderCodons(rna, i);
