@@ -38,21 +38,44 @@ function sleep(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
-function renderCodons(tokens, highlightIndex = -1) {
+function renderCodons(tokens, highlightIndex = -1, highlightCharIndex = -1) {
   sequenceEl.innerHTML = "";
+
   tokens.forEach((token, i) => {
-    const span = document.createElement("span");
-    span.textContent = token;
-    span.classList.add("codon");
-    if (i === highlightIndex) {
-      span.classList.add("active");
+    // If it's a 3-letter codon (e.g., "AAT") or RNA (e.g., "AAU"), split into nucleotides
+    const isCodon = /^[AUGCT]{3}$/.test(token);
+
+    if (isCodon) {
+      const codonSpan = document.createElement("span");
+      codonSpan.classList.add("codon");
+
+      token.split("").forEach((char, j) => {
+        const charSpan = document.createElement("span");
+        charSpan.textContent = char;
+        if (i === highlightIndex && j === highlightCharIndex) {
+          charSpan.classList.add("active");
+        }
+        codonSpan.appendChild(charSpan);
+      });
+
+      sequenceEl.appendChild(codonSpan);
+    } else {
+      // Fallback for things like "Asn", "K", "Ninaad"
+      const span = document.createElement("span");
+      span.textContent = token;
+      span.classList.add("codon");
+      if (i === highlightIndex) {
+        span.classList.add("active");
+      }
+      sequenceEl.appendChild(span);
     }
-    sequenceEl.appendChild(span);
+
     if (i < tokens.length - 1) {
       sequenceEl.append(" ");
     }
   });
 }
+
 
 
 // Animation function
@@ -67,10 +90,21 @@ async function animateSequence() {
   const rna = dna.map(dnaToRna);
   let rnaDisplay = [...dna]; // clone for animating transition
   for (let i = 0; i < rna.length; i++) {
-    rnaDisplay[i] = rna[i];
-    renderCodons(rnaDisplay, i);
-    await sleep(200);
+    const oldCodon = dna[i].split("");
+    const newCodon = rna[i].split("");
+
+    for (let j = 0; j < 3; j++) {
+      // Update only one nucleotide at a time
+      const updated = [...rnaDisplay];
+      updated[i] = oldCodon.map((c, idx) => (idx <= j ? newCodon[idx] : oldCodon[idx])).join("");
+      renderCodons(updated, i, j);
+      await sleep(150);
   }
+
+  // Finalize replacement
+  rnaDisplay[i] = rna[i];
+}
+
 
   await sleep(1000);
 
@@ -122,7 +156,8 @@ async function animateSequence() {
   finalLine.style.fontFamily = "inherit";
   finalLine.style.marginTop = "1rem";
 
-  sequenceEl.parentElement.replaceWith(finalLine);
+  sequenceEl.textContent = "Ninaad Kalla";
+  sequenceEl.classList.remove("codon");
 }
 
 
