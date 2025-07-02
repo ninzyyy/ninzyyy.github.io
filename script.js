@@ -45,7 +45,7 @@ function renderCodons(tokens, highlightIndex = -1) {
     span.textContent = text;
     span.classList.add("codon");
     if (i === highlightIndex) {
-      span.classList.add("highlight");
+      span.classList.add("active");
     }
     sequenceEl.appendChild(span);
 
@@ -111,8 +111,13 @@ async function animateSequence() {
     }
     sequenceEl.textContent = display.join(" ");
     await sleep(100);
-
   }
+
+  await sleep(500);
+
+  // Replace animated line with clean final line
+  sequenceEl.parentElement.innerHTML = `<p>Hi, my name is Ninaad Kalla</p>`;
+
 }
 
 animateSequence();
