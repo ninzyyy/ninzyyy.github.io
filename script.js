@@ -1,62 +1,82 @@
-const sequenceElement = document.getElementById("sequence");
-const toggleButton = document.getElementById("toggle-theme");
+const name = "NINAADKALLA";
 
-// Toggle light/dark mode
-toggleButton.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-});
-
-// Load saved theme
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark");
+// List of 1-letter amino acid name to codons
+const aminoCodons = {
+  N:["AAT", "AAC"],
+  I:["ATT", "ATC", "ATA"],
+  A:["GCT", "GCC", "GCA", "GCG"],
+  D:["GAT", "GAC"],
+  K:["AAA", "AAG"],
+  L:["TTA", "TTG", "CTT", "CTC", "CTA", "CTG"]
 }
 
-// Animation: DNA → RNA → 3-letter → 1-letter
-const name = "NINAADKALLA";
-const aminoMap = {
-  N: "AAC", I: "AUU", A: "GCU", D: "GAU", K: "AAA", L: "UUA"
-};
+// List of codons to 3-letter amino acid name
 const codonToAA3 = {
-  AAC: "Asn", AUU: "Ile", GCU: "Ala", GAU: "Asp", AAA: "Lys", UUA: "Leu"
+  AAT: "Asn", AAC: "Asn",
+  ATT: "Ile", ATC: "Ile", ATA: "Ile",
+  GCT: "Ala", GCC: "Ala", GCA: "Ala", GCG: "Ala",
+  GAT: "Asp", GAC: "Asp",
+  AAA: "Lys", AAG: "Lys",
+  TTA: "Leu", TTG: "Leu", CTT: "Leu", CTC: "Leu", CTA: "Leu", CTG: "Leu"
 };
+
+
+// Function to randomly pick a codon for a given letter
+function getRandomCodon(aminoLetter) {
+  const options = aminoCodons[aminoLetter];
+  return options[Math.floor(Math.random() * options.length)];
+}
+
+
+// Function to convert DNA to RNA (T -> U)
+function dnaToRna(codon) {
+  return codon.replace(/T/g, "U");
+}
+
+
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(res => setTimeout(res, ms));
 }
 
+
+// Animation function
 async function animateSequence() {
-  let output = "";
 
-  output += "🧬 DNA: ";
-  for (let char of name) {
-    const rna = aminoMap[char];
-    const dna = rna.replace(/U/g, "T");
-    output += dna + " ";
-    sequenceElement.textContent = output;
-    await sleep(250);
+  const sequenceEl = document.getElementById("sequence");
+
+
+  // Step 1: Show DNA
+  let dna = name.split("").map(getRandomCodon);
+  sequenceEl.textContent = dna.join(" ");
+  await sleep(500)
+
+  // Step 2: DNA → RNA
+  let rna = dna.map(dnaToRna);
+  for (let i = 0; i < dna.length; i++) {
+    dna[i] = rna[i];
+    sequenceEl.textContent = dna.join(" ");
+    await sleep(100);
   }
 
-  output += "\n\n🧪 RNA: ";
-  for (let char of name) {
-    output += aminoMap[char] + " ";
-    sequenceElement.textContent = output;
-    await sleep(250);
+  await sleep(500);
+
+  // Step 3: RNA → 3-letter AA
+  const aa3 = rna.map(c => codonToAA3[c.replace(/U/g, "T")]);
+  for (let i = 0; i < rna.length; i++) {
+    rna[i] = aa3[i];
+    sequenceEl.textContent = dna.join(" ");
+    await sleep(100);
   }
 
-  output += "\n\n🔬 Codons → 3-letter codes: ";
-  for (let char of name) {
-    const codon = aminoMap[char];
-    output += codonToAA3[codon] + " ";
-    sequenceElement.textContent = output;
-    await sleep(250);
-  }
+  await sleep(500);
 
-  output += "\n\n🔡 Final protein (1-letter): ";
-  for (let char of name) {
-    output += char;
-    sequenceElement.textContent = output;
-    await sleep(250);
+  // Step 4: 3-letter AA → 1-letter name AA
+  const letters = name.split("");
+  for (let i = 0; i < dna.length; i++) {
+    dna[i] = letters[i];
+    sequenceEl.textContent = dna.join(" ");
+    await sleep(100);
   }
 }
 
