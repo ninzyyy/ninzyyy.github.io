@@ -1,28 +1,23 @@
-// Light/Dark Mode
 const toggleButton = document.getElementById("mode-toggle");
 const html = document.documentElement;
 
 function setTheme(theme) {
   html.dataset.theme = theme;
-  toggleButton.innerHTML = theme === "dark"
-  ? '<i class="fas fa-sun" id="theme-icon"></i>'
-  : '<i class="fas fa-moon" id="theme-icon"></i>';
+
+  const icon = document.getElementById("theme-icon");
+  icon.classList.remove("fa-sun", "fa-moon");
+  icon.classList.add(theme === "dark" ? "fa-sun" : "fa-moon");
+
   localStorage.setItem("theme", theme);
 }
 
-// Set light/dark theme on load
+// Initialize on load
 (function initializeTheme() {
-  const saved = localStorage.getItem("theme");
-  if (saved) {
-    setTheme(saved);
-  } else {
-    const hour = new Date().getHours();
-    const theme = hour >= 19 || hour < 7 ? "dark" : "light"; // Night = dark
-    setTheme(theme);
-  }
+  const current = html.dataset.theme;
+  setTheme(current);
 })();
 
-// Toggle light/dark mode on click
+// Toggle on click
 toggleButton.onclick = () => {
   const current = html.dataset.theme;
   const next = current === "dark" ? "light" : "dark";
@@ -54,7 +49,7 @@ const name = "Ninaad";
 
 // Format string into triplets with padding or spacing
 function formatTripletStep(chars, pad = ' ') {
-  return chars.map(ch => ch + pad + pad).join('');
+  return chars.map(ch => pad + ch + pad).join('');
 }
 
 const dnaCodons = name.toUpperCase().split('').map(letter => {
@@ -91,7 +86,7 @@ async function collapseSpacedName(spaced) {
     display = merged + '   ' + rest;
 
     anim.textContent = display.trimEnd();
-    await delay(100);
+    await delay(150);
   }
 
   // Capitalize first letter
@@ -144,6 +139,8 @@ async function animateText() {
 
   await collapseSpacedName(steps[steps.length - 1]);
   anim.classList.remove("animating");
+  anim.style.color = "var(--color-text-secondary)";
+
 }
 
 animateText();

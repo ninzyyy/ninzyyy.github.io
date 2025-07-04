@@ -1,42 +1,50 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Ninaad Kalla</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ninaad Kalla</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-</head>
+    <!-- Set theme before styles load -->
+    <script>
+      (function () {
+        const saved = localStorage.getItem("theme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.dataset.theme = saved;
+        }
+      })();
+    </script>
 
-<body>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
 
-  <button id="mode-toggle">
-    <i class="fas fa-moon"></i>
-  </button>
+  <body>
+    <button id="mode-toggle" aria-label="Toggle theme">
+      <i class="fas" id="theme-icon"></i>
+    </button>
 
-  <div id ="content">
-    <main>
+    <div id="content">
+      <main>
+        <pre><span id="introduction">Hey, my name is </span><span id="animation"></span></pre>
 
-      <pre><span id="introduction">Hey, my name is </span><span id="animation"></span></pre>
+        <div id="desc">
+          I'm currently a Master's student studying Bioinformatics at l'Université de Montréal.
+        </div>
+        <div id="desc">
+          I am interested in interpretable machine learning and analytical methods to digest complex biological data.
+        </div>
 
-      <div id="desc">
-        I'm currently a Master's student studying Bioinformatics at l'Université de Montréal.
-      </div>
+        <div id="contact">
+          <p>Email: <a href="mailto:ninaadkalla@gmail.com">ninaadkalla@gmail.com</a></p>
+          <p>GitHub: <a href="https://github.com/ninzyyy" target="_blank">github.com/ninzyyy</a></p>
+        </div>
+      </main>
+    </div>
 
-      <div id="desc">
-        I am interested in interpretable machine learning and analytical methods to digest complex biological data.
-      </div>
-
-      <div id="contact">
-        <p>Email: <a href="mailto:ninaadkalla@gmail.com">ninaadkalla@gmail.com</a></p>
-        <p>GitHub: <a href="https://github.com/ninzyyy" target="_blank">github.com/ninzyyy</a></p>
-      </div>
-
-
-    </main>
-  </div>
-
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
