@@ -1,3 +1,4 @@
+// Toggle light/dark theme
 const toggleButton = document.getElementById("mode-toggle");
 const html = document.documentElement;
 
@@ -7,11 +8,8 @@ function setTheme(theme) {
   const icon = document.getElementById("theme-icon");
   icon.classList.remove("fa-sun", "fa-moon");
   icon.classList.add(theme === "dark" ? "fa-sun" : "fa-moon");
-
-  localStorage.setItem("theme", theme);
 }
 
-// Initialize on load
 (function initializeTheme() {
   const current = html.dataset.theme;
   setTheme(current);
