@@ -1,13 +1,13 @@
 :root {
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --size: 12px;
+  --font: "Inter", Roboto, sans-serif;
+  --size: 14px;
   --spacing: 1.6;
 }
 
 /* Theme: Light */
 html[data-theme="light"] {
-  --color-bg: #fff;
-  --color-text-primary: #000;
+  --color-bg: #FDFFFF;
+  --color-text-primary: #111;
   --color-text-secondary: #666;
   --color-link: #aaaaaa;
 }
@@ -15,7 +15,7 @@ html[data-theme="light"] {
 /* Theme: Dark */
 html[data-theme="dark"] {
   --color-bg: #111;
-  --color-text-primary: #eee;
+  --color-text-primary: #FDFFFF;
   --color-text-secondary: #bbb;
   --color-link: #5e5e5e;
 }
@@ -89,7 +89,7 @@ body {
 }
 
 html[data-theme="light"] #theme-icon.fa-moon {
-  color: #d1d1d1;
+  color: hwb(0 64% 36%);
 }
 
 html[data-theme="dark"] #theme-icon.fa-sun {
