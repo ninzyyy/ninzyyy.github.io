@@ -42,12 +42,13 @@ body {
 }
 
 #content {
-  margin-left: 33.33vw;
-  width: 33.33vw;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding-top: 4rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-top: 4rem;
 }
 
 /* Text sections */
@@ -72,6 +73,47 @@ body {
   color: #007acc;
   text-decoration: underline;
 }
+
+#projects {
+  margin-top: 2rem;
+  color: var(--color-text-secondary);
+}
+
+#section-title {
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.project-item {
+  margin-bottom: 1.2rem;
+}
+
+.project-title {
+  color: var(--color-link);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.project-title a {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.project-title a:hover {
+  color: #007acc;
+  text-decoration: underline;
+}
+
+.external-link {
+  font-size: 0.85em;
+}
+
+.project-desc {
+  margin-left: 1.5rem;
+  font-size: 0.95em;
+}
+
 
 /* Toggle button */
 #mode-toggle {
