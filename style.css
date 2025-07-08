@@ -114,6 +114,16 @@ body {
   font-size: 0.95em;
 }
 
+.project-tools {
+  size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.project-tools .tool-names {
+  color: var(--color-link);
+}
+
 
 /* Toggle button */
 #mode-toggle {
@@ -165,3 +175,4 @@ html[data-theme="dark"] #theme-icon.fa-sun {
     font-size: 1.5rem;
   }
 }
+
